@@ -1,0 +1,19 @@
+<routes>
+  <vType id="standard_car" accel="2.00" decel="3.50" sigma="0.4" length="4.5" minGap="2.0" maxSpeed="14.0"/>
+  <route id="r_N2S" edges="N2J0 J02S"/>
+  <route id="r_S2N" edges="S2J0 J02N"/>
+  <route id="r_N2E" edges="N2J0 J02E"/>
+  <route id="r_S2W" edges="S2J0 J02W"/>
+  <route id="r_E2W" edges="E2J0 J02W"/>
+  <route id="r_W2E" edges="W2J0 J02E"/>
+  <route id="r_E2N" edges="E2J0 J02N"/>
+  <route id="r_W2S" edges="W2J0 J02S"/>
+  <flow id="f_N2S" route="r_N2S" type="standard_car" begin="0" end="120" vehsPerHour="560" departLane="best" departSpeed="max"/>
+  <flow id="f_S2N" route="r_S2N" type="standard_car" begin="0" end="120" vehsPerHour="560" departLane="best" departSpeed="max"/>
+  <flow id="f_N2E" route="r_N2E" type="standard_car" begin="0" end="120" vehsPerHour="240" departLane="best" departSpeed="max"/>
+  <flow id="f_S2W" route="r_S2W" type="standard_car" begin="0" end="120" vehsPerHour="240" departLane="best" departSpeed="max"/>
+  <flow id="f_E2W" route="r_E2W" type="standard_car" begin="0" end="120" vehsPerHour="315" departLane="best" departSpeed="max"/>
+  <flow id="f_W2E" route="r_W2E" type="standard_car" begin="0" end="120" vehsPerHour="315" departLane="best" departSpeed="max"/>
+  <flow id="f_E2N" route="r_E2N" type="standard_car" begin="0" end="120" vehsPerHour="135" departLane="best" departSpeed="max"/>
+  <flow id="f_W2S" route="r_W2S" type="standard_car" begin="0" end="120" vehsPerHour="135" departLane="best" departSpeed="max"/>
+</routes>
