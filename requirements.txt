@@ -1,0 +1,12 @@
+# Core simulation & SUMO dependencies
+eclipse-sumo>=1.27
+traci>=1.27
+sumolib>=1.27
+
+# Data analysis & scientific computing
+numpy>=2.0
+pandas>=2.0
+matplotlib>=3.8
+
+# Testing
+pytest>=8.0
