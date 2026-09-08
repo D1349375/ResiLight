@@ -33,6 +33,7 @@ from typing import Dict, List, Optional, Tuple, Any
 from network_sim.link_quality import NetworkQuality
 from .max_pressure import MaxPressureController
 from .fixed_time import FixedTimeController
+from .bumpless_transfer import BumplessTransferManager, TransitionMode
 
 logger = logging.getLogger("degradation_fsm")
 
@@ -59,7 +60,8 @@ class TransitionRecord:
 
 class DegradationFSM:
     """
-    State machine evaluating 5G link health and executing hierarchical degradation.
+    State machine evaluating 5G link health and executing hierarchical degradation,
+    with Bumpless Transfer (smooth handover) support upon link recovery.
     """
 
     def __init__(
@@ -68,6 +70,8 @@ class DegradationFSM:
         max_pressure_controller: Optional[MaxPressureController] = None,
         level0_controller: Optional[Any] = None,
         level1_controller: Optional[Any] = None,
+        bumpless_manager: Optional[BumplessTransferManager] = None,
+        enable_bumpless: bool = True,
         # Thresholds
         l0_max_latency_ms: float = 50.0,
         l0_max_jitter_ms: float = 10.0,
@@ -83,6 +87,7 @@ class DegradationFSM:
         self.l1_max_latency = l1_max_latency_ms
         self.l1_max_loss = l1_max_loss_rate
         self.debounce_steps = debounce_steps
+        self.enable_bumpless = enable_bumpless
 
         # Controllers for each level
         self.max_pressure = max_pressure_controller or MaxPressureController(tls_id)
@@ -92,11 +97,16 @@ class DegradationFSM:
             phase_cycle=[(0, 35.0), (1, 3.0), (2, 25.0), (3, 3.0)]
         )
         self.level1_controller = level1_controller
+        self.bumpless_manager = bumpless_manager or BumplessTransferManager(transition_duration_s=45.0)
 
         self.current_level = DegradationLevel.LEVEL_0_NORMAL
         self._target_level = DegradationLevel.LEVEL_0_NORMAL
         self._consecutive_target_count = 0
         self.transition_log: List[TransitionRecord] = []
+
+    @property
+    def is_in_bumpless_recovery(self) -> bool:
+        return self.enable_bumpless and self.bumpless_manager.is_active
 
     def evaluate_quality(self, quality: NetworkQuality) -> Tuple[DegradationLevel, str]:
         """
@@ -168,6 +178,18 @@ class DegradationFSM:
                     f"[{current_time_s:.1f}s] Degradation FSM transition: Level {self.current_level.name} "
                     f"-> Level {desired_level.name} | Reason: {reason}"
                 )
+
+                # Check if recovering to Level 0 with Bumpless Transfer enabled
+                if (
+                    self.enable_bumpless
+                    and desired_level == DegradationLevel.LEVEL_0_NORMAL
+                    and self.current_level in [DegradationLevel.LEVEL_2_FALLBACK, DegradationLevel.LEVEL_1_PARTIAL]
+                ):
+                    # Initial fallback durations (from local max pressure state)
+                    initial_durations = {0: 30.0, 2: 30.0}
+                    target_durations = {0: 35.0, 2: 25.0}
+                    self.bumpless_manager.start_transition(initial_durations, target_durations)
+
                 self.current_level = desired_level
 
         return self.current_level
@@ -201,10 +223,16 @@ class DegradationFSM:
             if self.level1_controller:
                 phase = self.level1_controller.step(lane_queues, lane_vehicles, delta_t=delta_t)
             else:
-                # Fallback to Max Pressure or weighted baseline if Level 1 controller is omitted
                 phase = self.max_pressure.step(lane_queues, lane_vehicles, delta_t=delta_t)
         else:
-            # Level 0: Global / Central Coordinator
+            # Level 0: Global / Central Coordinator with optional Bumpless handover
+            if self.enable_bumpless and self.bumpless_manager.is_active:
+                blended, weight, done = self.bumpless_manager.step(delta_t)
+                # Apply blended phase timing to level0 controller if it supports dynamic phase cycles
+                if hasattr(self.level0_controller, "phase_cycle") and len(self.level0_controller.phase_cycle) >= 4:
+                    self.level0_controller.phase_cycle[0] = (0, blended.get(0, 35.0))
+                    self.level0_controller.phase_cycle[2] = (2, blended.get(2, 25.0))
+
             if hasattr(self.level0_controller, "step"):
                 phase = self.level0_controller.step(delta_t)
             else:
