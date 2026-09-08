@@ -8,12 +8,12 @@
   <route id="r_W2E" edges="W2J0 J02E"/>
   <route id="r_E2N" edges="E2J0 J02N"/>
   <route id="r_W2S" edges="W2J0 J02S"/>
-  <flow id="f_N2S" route="r_N2S" type="standard_car" begin="0" end="220" vehsPerHour="630" departLane="best" departSpeed="max"/>
-  <flow id="f_S2N" route="r_S2N" type="standard_car" begin="0" end="220" vehsPerHour="630" departLane="best" departSpeed="max"/>
-  <flow id="f_N2E" route="r_N2E" type="standard_car" begin="0" end="220" vehsPerHour="270" departLane="best" departSpeed="max"/>
-  <flow id="f_S2W" route="r_S2W" type="standard_car" begin="0" end="220" vehsPerHour="270" departLane="best" departSpeed="max"/>
-  <flow id="f_E2W" route="r_E2W" type="standard_car" begin="0" end="220" vehsPerHour="350" departLane="best" departSpeed="max"/>
-  <flow id="f_W2E" route="r_W2E" type="standard_car" begin="0" end="220" vehsPerHour="350" departLane="best" departSpeed="max"/>
-  <flow id="f_E2N" route="r_E2N" type="standard_car" begin="0" end="220" vehsPerHour="150" departLane="best" departSpeed="max"/>
-  <flow id="f_W2S" route="r_W2S" type="standard_car" begin="0" end="220" vehsPerHour="150" departLane="best" departSpeed="max"/>
+  <flow id="f_N2S" route="r_N2S" type="standard_car" begin="0" end="200" vehsPerHour="630" departLane="best" departSpeed="max"/>
+  <flow id="f_S2N" route="r_S2N" type="standard_car" begin="0" end="200" vehsPerHour="630" departLane="best" departSpeed="max"/>
+  <flow id="f_N2E" route="r_N2E" type="standard_car" begin="0" end="200" vehsPerHour="270" departLane="best" departSpeed="max"/>
+  <flow id="f_S2W" route="r_S2W" type="standard_car" begin="0" end="200" vehsPerHour="270" departLane="best" departSpeed="max"/>
+  <flow id="f_E2W" route="r_E2W" type="standard_car" begin="0" end="200" vehsPerHour="350" departLane="best" departSpeed="max"/>
+  <flow id="f_W2E" route="r_W2E" type="standard_car" begin="0" end="200" vehsPerHour="350" departLane="best" departSpeed="max"/>
+  <flow id="f_E2N" route="r_E2N" type="standard_car" begin="0" end="200" vehsPerHour="150" departLane="best" departSpeed="max"/>
+  <flow id="f_W2S" route="r_W2S" type="standard_car" begin="0" end="200" vehsPerHour="150" departLane="best" departSpeed="max"/>
 </routes>
